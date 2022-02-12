@@ -3,13 +3,18 @@
 <head>
     <meta charset="utf-8">
     <title>PACEMAKER-GROUP6</title>
+    <!--the below three js file is download from reference office website
+    axios.min.js is able using keyword of axios to do the page asynchronous interaction like ajax
+    -->
     <script src="../static/js/echarts.min.js"></script>
     <script src="../static/js/vue.js"></script>
+    <script src="../static/js/axios.min.js"></script>
     <!--the below two line is reference ali-elementui layout-->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
+    <!--entity layout-->
     <div id="app">
         <el-container style="width:1000px">
             <el-header style="height: 30px;">PaceMaker-Simulator</el-header>
@@ -18,51 +23,105 @@
                 <div id="pacemakerRate" style="width:950px;height:200px;border: 0px"></div>
                 <el-row>
                     <el-col :span="12">
-                        <div class="grid-content bg-purple">
+                        <div>
                             <b>PaceMaker</b>
                             <br/>
-                            <el-button id="pacemakerSwitch">on</el-button>
+                            <el-button id="pacemakerSwitch" style="margin-top:10px;margin-bottom: 10px">on</el-button>
                         </div>
                     </el-col>
                     <el-col :span="12">
-                        <div class="grid-content bg-purple-light">
-                            <b>Heart Rate:</b><el-input v-model="value1"></el-input><b>bpm</b><br>
+                        <div>
+                            <b>Heart Rate:</b>&nbsp;
+                            <el-input v-model="value1" style="width: 55px"></el-input>
+                            &nbsp;<b>bpm</b><br>
                             <div id="Heart_Rate">
-                                <el-slider v-model="value1" max="220"></el-slider>
+                                <el-slider v-model="value1" max="220" style="width: 360px"></el-slider>
                             </div>
                         </div>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="12">
-                        <div class="grid-content bg-purple">
+                        <div>
                             <b>Modes</b><br>
-                            <el-button id="AAI">AAI</el-button>
-                            <el-button id="VDD">VDD</el-button>
-                            <el-button id="DDD">DDD</el-button>
+                            <el-button id="AAI" style="margin-top:10px">AAI</el-button>
+                            <el-button id="VDD" style="margin-top:10px">VDD</el-button>
+                            <el-button id="DDD" style="margin-top:10px">DDD</el-button>
                         </div>
                     </el-col>
                     <el-col :span="12">
-                        <div class="grid-content bg-purple-light">
-                        <b>PRInterval:</b><el-input v-model="value2"></el-input><b>ms</b><br>
-                        <div id="PRInterval">
-                            <el-slider v-model="value2" max="550"></el-slider>
+                        <div>
+                            <b>PRInterval:</b>&nbsp;
+                                <el-input v-model="value2" style="width: 55px"></el-input>
+                            &nbsp;<b>ms</b><br>
+                            <div id="PRInterval">
+                                <el-slider v-model="value2" max="550" style="width: 360px"></el-slider>
+                            </div>
+                            <el-button id="ReSet" style="margin-top:10px;margin-bottom: 10px">ReSet</el-button>
                         </div>
-                        <el-button id="ReSet">ReSet</el-button>
+                    </el-col>
+                </el-row>
+                <HR width=950 style="border: double" color="#409EFF" SIZE=1>
+                <el-row>
+                    <el-col :span="12">
+                        <div>
+                            <b>Battery Failure</b>&nbsp;&nbsp;
+                            <el-switch
+                                    v-model="value4"
+                                    active-text="open"
+                                    inactive-text="close">
+                            </el-switch>
+                            <div id="Battery_Failure">
+                                <el-slider v-model="value3" max="100" style="width: 300px"></el-slider>
+                            </div>
                         </div>
+                    </el-col>
+                    <el-col :span="12">
+                        <b>Leads Failure on SA Node</b>&nbsp;&nbsp;
+                        <el-switch
+                                v-model="value5"
+                                active-text="open"
+                                inactive-text="close">
+                        </el-switch>
+                        <br/>
+                        <b>Leads Failure on AV Node</b>&nbsp;&nbsp;
+                        <el-switch
+                                v-model="value6"
+                                active-text="open"
+                                inactive-text="close">
+                        </el-switch>
                     </el-col>
                 </el-row>
             </el-main>
         </el-container>
     </div>
+    <!--entity style and color-->
+    <style>
+        .el-header{
+            background-color: #B3C0D1;
+            color: #333;
+            text-align: center;
+            line-height: 30px;
+        }
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: left;
+        }
+    </style>
+
     <script>
-        //Vue+elementui control entity formate
+        //Vue+elementui control entity data
         var vue = new Vue({
             el:'#app',
             data() {
                 return {
                     value1: 70,
                     value2: 150,
+                    value3: 100,
+                    value4: false,
+                    value5: false,
+                    value6: false
                 }
             },
         })
@@ -81,59 +140,22 @@
 				//出队操作  
 			this.pop = function(){  
 				return arr.shift();  
-			}  
-				//获取队首  
-			this.getFront = function(){  
-				return arr[0];  
-			}  
-				//获取队尾  
-			this.getRear = function(){  
-				return arr[arr.length - 1]  
-			}  
+			}
 				//清空队列  
 			this.clear = function(){  
 				arr = [];  
 			}  
-				//获取队长  
-			this.size = function(){  
-				return length;  
-			}  
+
 		}
 		  //时间戳转日期格式
-		var aq=new ArrayQueue();
         var myChart = echarts.init(document.getElementById('heartRate'));
 		var yAxisData = [];
 		var xAxisData=[];
-		function randomData(data) {
-			now=new Date().getTime();
-			if(data!=null){
-				xAxisData.push(now);
-				yAxisData.push({
-					"name": now.toString(),
-					"value":data
-				});
-			}else{
-				xAxisData.push(now);
-				yAxisData.push({
-					"name": now.toString(),
-					"value":60//+Math.random() *5
-				});
-			}	
-			
-		}
+
 		var sum=30;
 		var option = {
 			backgroundColor:"black",
 			animation: false,
-			title:[
-				{
-					text: 'pacemaker',
-					textStyle: {
-					  color:"#14e472"
-					},
-				} 
-			
-			] ,
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: { type: 'cross' }
@@ -142,12 +164,12 @@
 				left: "100px"/*"50px"*/,
 				right: "100px"/*"15px"*/
 			},
-			/**legend: {
-				data: ['当前心跳'],
+			legend: {
+				data: ['pacemaker'],
 				textStyle: {
 				  color:"#14e472"
 				}
-			},**/
+			},
 			xAxis: {
 				type: 'category',
 				boundaryGap: false,
@@ -179,7 +201,6 @@
 						color: "#14e472"
 					}
 				},
-			
 				axisLabel: {
 					textStyle: {
 						color: "#14e472",
@@ -410,22 +431,6 @@
         myChart1.setOption(option);
     </script>
 
-    <!--entity style and color-->
-    <style>
-        .el-header{
-            background-color: #B3C0D1;
-            color: #333;
-            text-align: center;
-            line-height: 30px;
-        }
-
-        .el-main {
-            background-color: #E9EEF3;
-            color: #333;
-            text-align: center;
-            line-height: 160px;
-        }
-    </style>
 </body>
 </html>
 
