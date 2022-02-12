@@ -9,7 +9,7 @@ import java.util.List;
  * @author Yang
  * @date 2022/2/10
  */
-//this is contains all simulated echarts methods
+//this is contains all simulated echarts data methods
 @RestController
 public class pacemaker {
 
