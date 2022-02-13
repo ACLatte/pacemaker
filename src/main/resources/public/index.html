@@ -129,30 +129,49 @@
 
     <script type="text/javascript">
         //using echart to simulate the heart rate
-        // 基于准备好的dom，初始化echarts实例
+
+        <!--ready data storage arrag-->
 		function ArrayQueue(){  
-			var arr = [];  
-				//入队操作  
+			var arr = [];
+			//push new value to the arr
 			this.push = function(element){  
 				arr.push(element);  
 				return true;  
 			}  
-				//出队操作  
+            // out of arr and return the first value of arr
 			this.pop = function(){  
 				return arr.shift();  
 			}
-				//清空队列  
-			this.clear = function(){  
-				arr = [];  
-			}  
+        }
 
-		}
-		  //时间戳转日期格式
-        var myChart = echarts.init(document.getElementById('heartRate'));
+        <!--create echarts object-->
+        var heartRate = echarts.init(document.getElementById('heartRate'));
+		<!--create echarts xAxis and yAxis-->
+        var xAxisData= [];
 		var yAxisData = [];
-		var xAxisData=[];
 
+		<!--create object of ArrayQueue named aq-->
+        var aq = new ArrayQueue();
+
+        function randomData(data) {
+            now = new Date().getTime();
+
+            if(data!=null){
+                xAxisData.push(now);
+                yAxisData.push({
+                    "value":data
+                });
+            }else{
+                xAxisData.push(now);
+                yAxisData.push({
+                    "value":40
+                });
+            }
+
+        }
 		var sum=30;
+
+        <!--format line style-->
 		var option = {
 			backgroundColor:"black",
 			animation: false,
@@ -169,20 +188,23 @@
 				axisPointer: { type: 'cross' }
 			},
 			 grid: {
-				left: "100px"/*"50px"*/,
-				right: "100px"/*"15px"*/
+				left: "100%",
+				right: "100%"
 			},
 			xAxis: {
 				type: 'category',
 				boundaryGap: false,
-				splitLine:{show: true}/*网格线*/,
+				splitLine:{
+				    show: true
+				},
 				axisLabel: {
 					show: false
 				},
 				axisTick: {
-					show: false
+					show: false,
 				},
 				axisLine: {
+				    show: false,
 					onZero: false,
 					lineStyle: {
 						color: '#14e472'
@@ -195,7 +217,6 @@
 			},
 			yAxis: { 
 				max: 100,
-				boundaryGap: true,
 				axisLine: {
 					lineStyle: {
 						color: "#14e472"
@@ -206,13 +227,15 @@
 						color: "#14e472",
 					}
 				},
+                axisTick: {
+                    show: false,
+                },
 				splitLine: {
 					show: false,
 				}	 
 			},
 			series: {
 				symbol: "none",
-				name: '当前心跳',
 				type: 'line',
 				data: yAxisData,
 				itemStyle: {
@@ -222,9 +245,10 @@
 								color: '#14e472' //改变折线颜色
 							}
 						}
-				} 
+				}
 			}
 		};
+
 		//设置心跳数据
 		setInterval(function () { 
 			randomData(aq.pop());
@@ -232,135 +256,145 @@
 				yAxisData.shift(); 
 				xAxisData.shift(); 
 			}
-			myChart.setOption(option); 
+            heartRate.setOption(option);
 		}, 20);
-		//添加心跳数据
-		setInterval(function () { 
-			aq.push(Math.round(60));
-			aq.push(Math.round(52));
-			aq.push(Math.round(52));
-		}, 1500);
+
+		//add heartRate to the arr
+		setInterval(function () {
+			aq.push(Math.round(65));
+            aq.push(Math.round(40));
+            aq.push(Math.round(40));
+            aq.push(Math.round(40));
+            aq.push(Math.round(40));
+            aq.push(Math.round(100));
+            aq.push(Math.round(10));
+		}, vue.$data.value1*10);
         // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        heartRate.setOption(option);
 
         //pacemaker echarts simulator
         //时间戳转日期格式
-        var aq1=new ArrayQueue();
-        var myChart1 = echarts.init(document.getElementById('pacemakerRate'));
-        var yAxisData1 = [];
-        var xAxisData1=[];
-        function randomData(data) {
-            now=new Date().getTime();
-            if(data!=null){
-                xAxisData1.push(now);
-                yAxisData1.push({
-                    "name": now.toString(),
-                    "value":data
-                });
-            }else{
-                xAxisData1.push(now);
-                yAxisData1.push({
-                    "name": now.toString(),
-                    "value":60//+Math.random() *5
-                });
-            }
-        }
-        var sum1=30;
-        var option1 = {
-            backgroundColor:"black",
-            animation: false,
-            title:[
-                {
-                    text: 'pacemaker',
-                    textStyle: {
-                        color:"#14e472"
-                    },
-                }
-            ] ,
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'cross' }
-            },
-            grid: {
-                left: "100px"/*"50px"*/,
-                right: "100px"/*"15px"*/
-            },
-            /**legend: {
-				data: ['当前心跳'],
-				textStyle: {
-				  color:"#14e472"
-				}
-			},**/
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                splitLine:{show: true}/*网格线*/,
-                axisLabel: {
-                    show: false
-                },
-                axisTick: {
-                    show: false
-                },
-                axisLine: {
-                    onZero: false,
-                    lineStyle: {
-                        color: '#14e472'
-                    }
-                },
-                data: xAxisData,
-                splitLine: {
-                    show: false,
-                }
-            },
-            yAxis: {
-                max: 100,
-                boundaryGap: true,
-                axisLine: {
-                    lineStyle: {
-                        color: "#14e472"
-                    }
-                },
-                axisLabel: {
-                    textStyle: {
-                        color: "#14e472",
-                    }
-                },
-                splitLine: {
-                    show: false,
-                }
-            },
-            series: {
-                symbol: "none",
-                name: '当前心跳',
-                type: 'line',
-                data: yAxisData1,
-                itemStyle: {
-                    normal: {
-                        color: '#14e472', //改变折线点的颜色
-                        lineStyle: {
-                            color: '#14e472' //改变折线颜色
-                        }
-                    }
-                }
-            }
-        };
-        //设置心跳数据
-        setInterval(function () {
-            randomData(aq1.pop());
-            if(yAxisData1.length>sum1*(100/20)){
-                yAxisData1.shift();
-                xAxisData1.shift();
-            }
-            myChart1.setOption(option1);
-        }, 20);
-        //添加心跳数据
-        setInterval(function () {
-            aq.push(Math.round(52));
-            aq.push(Math.round(62));
-            aq.push(Math.round(55));
-        }, 1500);
-        // 使用刚指定的配置项和数据显示图表。
-        myChart1.setOption(option1);
+        //from here
+        // var aq1=new ArrayQueue();
+        // var myChart1 = echarts.init(document.getElementById('pacemakerRate'));
+        // var yAxisData1 = [];
+        // var xAxisData1=[];
+        // function randomData(data) {
+        //     now=new Date().getTime();
+        //     if(data!=null){
+        //         xAxisData1.push(now);
+        //         yAxisData1.push({
+        //             "name": now.toString(),
+        //             "value":data
+        //         });
+        //     }else{
+        //         xAxisData1.push(now);
+        //         yAxisData1.push({
+        //             "name": now.toString(),
+        //             "value":60//+Math.random() *5
+        //         });
+        //     }
+        // }
+        // var sum1=30;
+        // var option1 = {
+        //     backgroundColor:"black",
+        //     animation: false,
+        //     title:[
+        //         {
+        //             text: 'pacemaker',
+        //             textStyle: {
+        //                 color:"#14e472"
+        //             },
+        //         }
+        //     ] ,
+        //     tooltip: {
+        //         trigger: 'axis',
+        //         axisPointer: { type: 'cross' }
+        //     },
+        //     grid: {
+        //         left: "100px"/*"50px"*/,
+        //         right: "100px"/*"15px"*/
+        //     },
+        //     /**legend: {
+		// 		data: ['当前心跳'],
+		// 		textStyle: {
+		// 		  color:"#14e472"
+		// 		}
+		// 	},**/
+        //     xAxis: {
+        //         type: 'category',
+        //         boundaryGap: false,
+        //         splitLine:{show: true}/*网格线*/,
+        //         axisLabel: {
+        //             show: false
+        //         },
+        //         axisTick: {
+        //             show: false
+        //         },
+        //         axisLine: {
+        //             show: false,
+        //             onZero: false,
+        //             lineStyle: {
+        //                 color: '#14e472'
+        //             }
+        //         },
+        //         data: xAxisData,
+        //         splitLine: {
+        //             show: false,
+        //         }
+        //     },
+        //     yAxis: {
+        //         max: 100,
+        //         boundaryGap: true,
+        //         axisLine: {
+        //             lineStyle: {
+        //                 color: "#14e472"
+        //             }
+        //         },
+        //         axisLabel: {
+        //             textStyle: {
+        //                 color: "#14e472",
+        //             }
+        //         },
+        //         axisTick: {
+        //             show: false
+        //         },
+        //         splitLine: {
+        //             show: false,
+        //         }
+        //     },
+        //     series: {
+        //         symbol: "none",
+        //         name: '当前心跳',
+        //         type: 'line',
+        //         data: yAxisData1,
+        //         itemStyle: {
+        //             normal: {
+        //                 color: '#14e472', //改变折线点的颜色
+        //                 lineStyle: {
+        //                     color: '#14e472' //改变折线颜色
+        //                 }
+        //             }
+        //         }
+        //     }
+        // };
+        // //设置心跳数据
+        // setInterval(function () {
+        //     randomData(aq1.pop());
+        //     if(yAxisData1.length>sum1*(100/20)){
+        //         yAxisData1.shift();
+        //         xAxisData1.shift();
+        //     }
+        //     myChart1.setOption(option1);
+        // }, 20);
+        // //添加心跳数据
+        // setInterval(function () {
+        //     aq.push(Math.round(52));
+        //     aq.push(Math.round(62));
+        //     aq.push(Math.round(55));
+        // }, 1500);
+        // // 使用刚指定的配置项和数据显示图表。
+        // myChart1.setOption(option1);
     </script>
 
 </body>
