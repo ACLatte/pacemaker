@@ -1,3 +1,7 @@
 server:
   port: 8080
 # this index.html running server port
+spring:
+  resources:
+    static-locations: classpath:/static/,classpath:/public
+# load related js file when running the page
